@@ -54,7 +54,7 @@ def pedidos_sin_procesar():
 
     for n in range(len(pedidos)):
         lista_pedidos_sin_procesar.append(pedidos[n]['pedido_id'])
-
+    
     return lista_pedidos_sin_procesar
 
 
@@ -88,11 +88,11 @@ def cargar_pedido_nuevo(ruta):
 
             dump_json('pedido.json', pedidos)
 
-            print(f'Pedido {pedido_nuevo[n]['pedido_id']} no está procesado. Añadido a pedidos sin procesar.')
+            print(f'Pedido {pedido_nuevo[n]["pedido_id"]} no está procesado. Añadido a pedidos sin procesar.')
         elif pedido_nuevo[n]['pedido_id'] in lista_procesados:
-            print(f'Pedido {pedido_nuevo[n]['pedido_id']} ya está procesado.')
+            print(f'Pedido {pedido_nuevo[n]["pedido_id"]} ya está procesado.')
         elif pedido_nuevo[n]['pedido_id'] in lista_no_procesados:
-            print(f'Pedido {pedido_nuevo[n]['pedido_id']} ya está añadido a no procesados.')
+            print(f'Pedido {pedido_nuevo[n]["pedido_id"]} ya está añadido a no procesados.')
 
 
 
@@ -171,7 +171,7 @@ def leer_pedido_y_verificar_stock(pedido_id):
     print(productos_cantidades_pedir)
     return dave, productos_cantidades_enviar
 
-leer_pedido_y_verificar_stock('P002')
+# leer_pedido_y_verificar_stock('P002')
 
 
 
@@ -194,7 +194,7 @@ def actualizar_almacén(pedido_id):
                 for k in productos_cantidades_enviar.keys():
                     if j == k:
                         almacen_completo['almacen'][i]['stock'][j] = almacen[k]
-                        print(f'El producto {j} viene del modulo: {i} y tras el envío quedan {almacen_completo['almacen'][i]["stock"]} unidades')
+                        print(f'El producto {j} viene del modulo: {i} y tras el envío quedan {almacen_completo["almacen"][i]["stock"]} unidades')
 
     dump_json('almacen.json', almacen_completo)                
 
