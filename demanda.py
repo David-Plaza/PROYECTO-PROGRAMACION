@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 def convertir_fecha(df):
     #Convertimos la columna fecha tipo datetime y añadimos columnas de año, mes, y primer día del mes
@@ -25,6 +26,32 @@ def cargar_datos(ruta_pedidos, ruta_clientes, ruta_incidencia):
     pedidos = convertir_fecha(pedidos)
     incidencia = convertir_fecha(incidencia)
     return pedidos, clientes, incidencia
+
+pedidos, clientes, incidencia = cargar_datos("pedidos-2.csv", "clientes.csv", "incidencia.csv")
+
+def mostrar_codigos_productos():
+    pedidos, clientes, incidencia = cargar_datos("pedidos-2.csv", "clientes.csv", "incidencia.csv")
+    codigos_productos = pedidos["producto_id"].unique()
+    print(f"Códigos de productos disponibles:\n{codigos_productos}")
+    return codigos_productos
+
+# lista = mostrar_codigos_productos()
+# print(lista)
+
+def enfermedades():
+    pedidos, clientes, incidencia = cargar_datos("pedidos-2.csv", "clientes.csv", "incidencia.csv")
+    incidencias_columnas_a_analizar = incidencia[[
+    'tasa_gripe',
+    'tasa_covid',
+    'tasa_respiratorias',
+    'tasa_gastro',
+    'tasa_cronicas',
+    'ocupacion_hospitalaria']].copy()
+    print(list(incidencias_columnas_a_analizar.columns))
+    return list(incidencias_columnas_a_analizar.columns)
+
+# enfermedades_validas = enfermedades()
+# print(enfermedades_validas)
 
 # TEST: 
 # pedidos, clientes, incidencia = cargar_datos("pedidos-2.csv","clientes.csv","incidencia.csv")
@@ -86,7 +113,7 @@ def evolucion_producto(df_pedidos, codigo_producto, plot = False):
     df = df_pedidos.copy()
     df = df[df["producto_id"] == codigo_producto]
 
-    nuevo_df = (df.groupby("fecha_mes", as_index=False)["unidades"].sum().sort_values("fecha_mes"))
+    nuevo_df = df.groupby(["fecha_mes","producto_id"])["unidades"].sum().reset_index()
 
     if plot:
         plt.figure()
@@ -104,6 +131,7 @@ def evolucion_producto(df_pedidos, codigo_producto, plot = False):
 # # print(evolucion_producto(pedidos, "F001"))
 # print(evolucion_producto(pedidos, "F003", plot=True))
 
+
 def comparar_productos(df_pedidos, codigos_productos, plot = False):
 
     #Verificamos si solo se admite una lista.
@@ -115,37 +143,48 @@ def comparar_productos(df_pedidos, codigos_productos, plot = False):
     df = df_pedidos.copy()
 
     # Filtrar solo los productos seleccionados
-    df = df[df["producto_id"].isin(codigos_productos)]
+    df = df[df["producto_id"].isin(codigos_productos)].copy()
 
     # Agrupar por producto y mes el promedio de unidades
     tabla = (df.groupby(["producto_id", "mes"], as_index=False)["unidades"].mean().rename(columns={"unidades": "unidades_promedio"}))
     diccionario_de_meses = {1: "Ene", 2: "Feb", 3: "Mar", 4: "Abr",5: "May", 6: "Jun", 7: "Jul", 8: "Ago",9: "Sep", 10: "Oct", 11: "Nov", 12: "Dic"}
-    print (tabla)
+
+    
+    #Pivotamos la tabla para combinar todos los  productos. Cada producto será una columna,  y además aseguramos con reindex que estén todos los meses  dedl 1 al 12
+    tabla_pivotada = (tabla.pivot(index="mes", columns="producto_id", values="unidades_promedio").reindex(range(1, 13))) 
     #.map busca el valor equivalente de cada número en el diccionario y lo reemplaza
     #Entonces creamos una columna que se llame mes_nombre, la cual asigne como valores
     #los que haya en el diccionario_de_meses, cuando las claves coincidan con las de la columna mes, ya que cada mes es un numero en esa columna.
-    tabla["mes_nombre"] = tabla["mes"].map(diccionario_de_meses)
-
-    # Renombrar a unidades_promedio
-    tabla = tabla.rename(columns={"unidades": "unidades_promedio"})
-    print(tabla)
+    tabla_pivotada["mes_nombre"] = tabla_pivotada.index.map(diccionario_de_meses)
+    
+    
     if plot:
         plt.figure()
-        plt.plot(tabla["mes"], tabla["unidades_promedio"], marker="o")
-        plt.xticks(range(1, 13), [pd.Timestamp(2000, m, 1).strftime("%b") for m in range(1, 13)])
+        for producto in codigos_productos:
+            if producto in tabla_pivotada.columns:
+                plt.plot(tabla_pivotada.index, tabla_pivotada[producto], marker="o", label=producto)
+        plt.xticks(range(1, 13), [diccionario_de_meses[m] for m in range(1, 13)])
         plt.title(f"Estacionalidad – {codigos_productos}")
         plt.xlabel("Mes")
         plt.ylabel("Unidades promedio")
+        plt.legend(title="Producto")
+        plt.grid(alpha=0.3)
         plt.tight_layout()
         plt.show()
 
-    return tabla[["mes", "mes_nombre", "unidades_promedio"]]
+    # Mostramos el resultado combinado
+
+
+    return tabla_pivotada.reset_index()
+
+
+
 
 #TEST
 # df = pd.read_csv("pedidos-2.csv")
 # df = convertir_fecha(df)
-# tabla_resultado = comparar_productos(df,  ["F002", "F008", "F012"], plot=True)
-# # tabla_resultado = comparar_productos(df, 5, plot=True)
+# tabla_resultado = comparar_productos(df,  ["F002", "F001", "F004"], plot=True)
+# print(tabla_resultado)
 
 def estacionalidad_productos(df_pedidos, codigo_producto, plot=False):
     
@@ -248,8 +287,8 @@ def demanda_vs_poblacion(df_pedidos, df_clientes, listado_productos = None):
 # pedidos = pd.read_csv("pedidos-2.csv")
 # incidencia = pd.read_csv("incidencia.csv")
 # demanda_y_poblacion_tabla = demanda_vs_poblacion(pedidos, clientes)
-# demanda_y_poblacion_tabla = demanda_vs_poblacion(pedidos, clientes, ["F001","F002"])
-# print(demanda_y_poblacion_tabla.head(10))
+# demanda_y_poblacion_tabla = demanda_vs_poblacion(pedidos, clientes, ["F002",'F004'])
+# print(demanda_y_poblacion_tabla)
 
 def estacionalidad_enfermedad(df_marcadores, plot = False):
 

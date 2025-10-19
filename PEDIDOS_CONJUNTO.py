@@ -19,17 +19,6 @@ def cargar_json(ruta_archivo):
             else:
                 continue
 
-def pedidos_sin_procesar():
-
-    pedidos = cargar_json('pedido.json')
-    lista_pedidos_sin_procesar = []
-
-    for n in range(len(pedidos)):
-        lista_pedidos_sin_procesar.append(pedidos[n]['pedido_id'])
-
-    return lista_pedidos_sin_procesar
-
-
 ### ACTUALIZAR JSON: Pide la ruta del archivo a actualizar y el archivo que se va a dumpear.
 
 def dump_json(ruta, dump):   
