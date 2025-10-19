@@ -199,31 +199,7 @@ def leer_pedido_y_verificar_stock(pedido_id):
     return productos_cantidades_enviar, productos_cantidades_pedir
 
 
-def leer_pedido_y_verificar_stock_2(pedido_id):
-    datos_almacen = productos_cantidades_almacen()  # Diccionario con stock actual del almacén
-    productos_cantidades_pedido = productos_cantidades_pedido_seleccionado(pedido_id)  # Diccionario con lo que se pide
 
-    productos_cantidades_enviar = {}
-    productos_cantidades_pedir = {}
-
-    for producto, cantidad_pedida in productos_cantidades_pedido.items():
-        cantidad_en_stock = datos_almacen.get(producto, 0)  # Si no está, devuelve 0
-
-        if cantidad_en_stock == 0:
-            print(f'❌ No hay existencias de {producto}. Se deben pedir {cantidad_pedida}.')
-            productos_cantidades_pedir[producto] = cantidad_pedida
-
-        elif cantidad_en_stock >= cantidad_pedida:
-            print(f'✅ Hay suficientes unidades de {producto}. Se envían {cantidad_pedida}.')
-            productos_cantidades_enviar[producto] = cantidad_pedida
-
-        else:
-            diferencia = cantidad_pedida - cantidad_en_stock
-            print(f'⚠️ Solo hay {cantidad_en_stock} unidades de {producto}. Se envían {cantidad_en_stock} y se piden {diferencia}.')
-            productos_cantidades_enviar[producto] = cantidad_en_stock
-            productos_cantidades_pedir[producto] = diferencia
-
-    return productos_cantidades_enviar, productos_cantidades_pedir
 
 ### ACTUALIZAR ALMACÉN RESTAR: La función resta todo lo que hemos enviado desde almacén. Primero cargamos las cantidades
 ### de almacén, el diccionario de productos a enviar y el almacen_completo (el .json inicial). Para cada producto
