@@ -32,7 +32,7 @@ def mostrar_estado_modulo():
     modulo_ver = input("¿Qué módulo deseas ver?").upper()
 
     while modulo_ver not in modulos:
-        modulo_ver = input('Jowey, te equivocaste, intentalo de nuevo').upper()
+        modulo_ver = input('Ese módulo no existe, intentalo de nuevo').upper()
         
     print(data['almacen'][modulo_ver]['capacidad_maxima'])
     print(data['almacen'][modulo_ver]['temperatura'])
