@@ -179,6 +179,22 @@ def comparar_productos(df_pedidos, codigos_productos, plot = False):
 
 
 
+def comparar(pedidos,codigos, plot):
+
+    agrupacion = []
+    for n in codigos:
+        agrupacion.append(evolucion_producto(pedidos,n,plot=False))
+    print(agrupacion)
+
+    datos = pd.concat(agrupacion)
+    print(datos)
+    if plot:
+        sns.lineplot(data = datos, y = 'unidades', x= 'fecha_mes', hue = 'producto_id')
+        plt.show()
+
+# comparar(pedidos,['F003','F002'],plot= True)
+
+
 
 #TEST
 # df = pd.read_csv("pedidos-2.csv")

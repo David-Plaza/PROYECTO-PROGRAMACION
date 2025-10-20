@@ -28,6 +28,9 @@ def dump_json(ruta, dump):
 
 
 
+
+
+
 ### LISTA PEDIDOS SIN PROCESAR: Carga pedidos.json, luego se genera una lista vacía donde se introducen
 ### cada 'P00X' del archivo con un for que lo recorre y los va agregando a esa lista vacía.
 
@@ -409,10 +412,11 @@ def ver_pedidos_en_marcha():
         for j in envios_en_marcha[n]['Datos']['Fabrica']['envio_almacen']:
             print(f'{envios_en_marcha[n]['Datos']['Fabrica']['envio_almacen'][j]} unidades del producto {[j]}')
         
-        print(f'Y el día {envios_en_marcha[n]['Datos']['Stock']['fecha_envio']}:')
+        if 'Stock' in envios_en_marcha[n]['Datos'].keys():
+            print(f'Y el día {envios_en_marcha[n]['Datos']['Stock']['fecha_envio']}:')
 
-        for j in envios_en_marcha[n]['Datos']['Stock']['envio_stock']:
-            print(f'{envios_en_marcha[n]['Datos']['Stock']['envio_stock'][j]} unidades del producto {[j]}')
+            for j in envios_en_marcha[n]['Datos']['Stock']['envio_stock']:
+                print(f'{envios_en_marcha[n]['Datos']['Stock']['envio_stock'][j]} unidades del producto {[j]}')
 
 
 # ver_pedidos_en_marcha()

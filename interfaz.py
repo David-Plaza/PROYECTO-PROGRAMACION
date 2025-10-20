@@ -176,7 +176,7 @@ def interfaz_iniciar():
                             print("Opción no válida, no se mostrará el gráfico.")
                             plot = False
 
-                        resultado = demanda.comparar_productos(pedidos, codigos, plot)
+                        resultado = demanda.comparar(pedidos, codigos, plot)
                         print("\nComparación de productos:")
                         print(resultado)
 
